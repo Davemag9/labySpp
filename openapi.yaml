@@ -1,0 +1,1190 @@
+openapi: 3.0.3
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.11
+servers:
+  - url: https://petstore3.swagger.io/api/v3
+  - url: https://pshenichniygandon.io/api/v3
+  
+  
+tags:
+  - name: device
+    description: Everything about your device
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: user
+    description: Everything about user
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: service
+    description: Access to service devices
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: problem
+    description: Access to list of problems
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+    
+paths:
+  /device:
+    put:
+      tags:
+        - device
+      summary: Update an existing device
+      description: Update an existing device by Id
+      operationId: updateDev
+      requestBody:
+        description: Update an existent device in the service
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Device'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Device'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Device not found
+        '405':
+          description: Validation exception
+      security:
+        - service_auth:
+          - admin
+          - user
+            
+    post:
+      tags:
+        - device
+      summary: Add a new device to the service
+      description: Add a new device to the service
+      operationId: addDevice
+      requestBody:
+        description: Create a new device in the service
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Device'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Device'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '405':
+          description: Invalid input
+      security:
+        - service_auth:
+          - admin
+          - user
+  /device/findByStatus:
+    get:
+      tags:
+        - device
+      summary: Finds devices by status
+      description: Multiple status values can be provided with comma separated strings
+      operationId: findDeviceByStatus
+      parameters:
+        - name: status
+          in: query
+          description: Status values that need to be considered for filter
+          required: false
+          explode: true
+          schema:
+            type: string
+            default : arrived
+            enum:
+              - arrived
+              - in work
+              - ready
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'          
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+        '400':
+          description: Invalid status value
+      security:
+        - service_auth:
+            - admin
+            - user
+  /device/findByFirm:
+    get:
+      tags:
+        - device
+      summary: Finds device by firm
+      description: Multiple tags can be provided with comma separated strings. Use mod1, mod2, mod3 for testing.
+      operationId: findDeviceByFirm
+      parameters:
+        - name: firm
+          in: query
+          description: Modelss to filter by
+          required: false
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'          
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+        '400':
+          description: Invalid firm value
+      security:
+        - service_auth:
+            - admin
+            - user
+  /device/{deviceId}:
+    get:
+      tags:
+        - device
+      summary: Find device by ID
+      description: Returns a single device
+      operationId: getDeviceById
+      parameters:
+        - name: deviceId
+          in: path
+          description: ID of device to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Device not found
+      security:
+        - api_key: []
+        - service_auth:
+            - admin
+            - user
+            
+    post:
+      tags:
+        - device
+      summary: Updates a device in the service with form data
+      description: ''
+      operationId: updateDeviceWithForm
+      parameters:
+        - name: deviceId
+          in: path
+          description: ID of device that needs to be updated
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: name
+          in: query
+          description: Name of device that needs to be updated
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Status of device that needs to be updated
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Something went wrong
+        '405':
+          description: Invalid input
+      security:
+        - service_auth:
+            - admin
+            - user
+            
+    delete:
+      tags:
+        - device
+      summary: Deletes a device
+      description: delete a device
+      operationId: deleteDevice
+      parameters:
+        - name: api_key
+          in: header
+          description: ''
+          required: false
+          schema:
+            type: string
+        - name: deviceId
+          in: path
+          description: Pet id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid pet value
+      security:
+        - service_auth:
+            - admin
+            - user
+  /user:
+    post:
+      tags:
+        - user
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+  /user/login:
+    get:
+      tags:
+        - user
+      summary: Logs user into the system
+      description: ''
+      operationId: loginUser
+      parameters:
+        - name: username
+          in: query
+          description: The user name for login
+          required: false
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid username/password supplied
+  /user/logout:
+    get:
+      tags:
+        - user
+      summary: Logs out current logged in user session
+      description: ''
+      operationId: logoutUser
+      parameters: []
+      responses:
+        default:
+          description: successful operation
+      security:
+        - service_auth:
+            - admin
+            - user
+  /user/{username}:
+    get:
+      tags:
+        - user
+      summary: Get user by user name
+      description: ''
+      operationId: getUserByName
+      parameters:
+        - name: username
+          in: path
+          description: 'The name that needs to be fetched. Use user1 for testing. '
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+      security:
+        - service_auth:
+            - admin
+            - user
+    put:
+      tags:
+        - user
+      summary: Update user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      parameters:
+        - name: username
+          in: path
+          description: name that need to be deleted
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent user in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+      security:
+        - service_auth:
+            - admin
+            - user
+    delete:
+      tags:
+        - user
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+        - name: username
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+      security:
+        - service_auth:
+            - admin
+            - user
+  /service/devices:
+    get:
+      tags:
+        - service
+      summary: Returns amount of devices by status
+      description: Returns a map of status codes to quantities
+      operationId: getInventory
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                  format: int32
+      security:
+        - service_auth:
+            - admin
+            - user
+  /service/mydevices:
+    get:
+      tags:
+        - service
+      summary: Returns user own devices
+      description: Returns an array of status codes to quantities
+      operationId: getMyDevices
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'          
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+      security:
+        - service_auth:
+            - admin
+            - user      
+  /service:
+    put:
+      tags:
+        - service
+      summary: Update an existing service
+      description: Update an existing dervice by Id
+      operationId: updateService
+      requestBody:
+        description: Update an existent dervice
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Service_Center'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Service_Center'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Service_Center'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service_Center'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Service_Center'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Device not found
+        '405':
+          description: Validation exception
+      security:
+        - service_auth:
+          - admin
+            
+    post:
+      tags:
+        - service
+      summary: Add a new service
+      description: Add a new service
+      operationId: addService
+      requestBody:
+        description: Create a new service
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Service_Center'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Service_Center'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Service_Center'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service_Center'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Service_Center'
+        '405':
+          description: Invalid input
+      security:
+        - service_auth:
+          - admin
+  /service/{serviceId}:
+    get:
+      tags:
+        - service
+      summary: Find service by ID
+      description: Returns a single service
+      operationId: getServiceById
+      parameters:
+        - name: serviceId
+          in: path
+          description: ID of service to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service_Center'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Service_Center'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Service not found
+      security:
+        - api_key: []
+        - service_auth:
+            - admin
+            - user
+            
+    post:
+      tags:
+        - service
+      summary: Updates a service with form data
+      description: ''
+      operationId: updateServiceWithForm
+      parameters:
+        - name: serviceId
+          in: path
+          description: ID of service that needs to be updated
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: name
+          in: query
+          description: Name of service that needs to be updated
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Status of service that needs to be updated
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Something went wrong
+        '405':
+          description: Invalid input
+      security:
+        - service_auth:
+            - admin
+            - user
+            
+    delete:
+      tags:
+        - service
+      summary: Deletes a service
+      description: delete a service
+      operationId: deleteService
+      parameters:
+        - name: api_key
+          in: header
+          description: ''
+          required: false
+          schema:
+            type: string
+        - name: serviceId
+          in: path
+          description: Service id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid service value
+      security:
+        - service_auth:
+            - admin
+  /problem:
+    put:
+      tags:
+        - problem
+      summary: Update an existing problem
+      description: Update an existing problem by Id
+      operationId: updateProblem
+      requestBody:
+        description: Update an existent problem
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Problem'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Problem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Problem'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Problem not found
+        '405':
+          description: Validation exception
+      security:
+        - service_auth:
+            - admin
+    post:
+      tags:
+        - problem
+      summary: Add a new problem
+      description: Add a new problem
+      operationId: addProblem
+      requestBody:
+        description: Create a new problem
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Problem'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Problem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Problem'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '405':
+          description: Invalid input
+      security:
+        - service_auth:
+            - admin
+  /problem/findByBranch:
+    get:
+      tags:
+        - problem
+      summary: Finds problem by branch
+      description: Multiple status values can be provided with comma separated strings
+      operationId: findProblemByBranch
+      parameters:
+        - name: branch
+          in: query
+          description: Branhc values that need to be considered for filter
+          required: false
+          explode: true
+          schema:
+            type: string
+            enum:
+              - screen
+              - battery
+              - button
+              - os
+              - hardware
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Problem'          
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Problem'
+        '400':
+          description: Invalid status value
+      security:
+        - service_auth:
+          - admin
+  /problem/{problemId}:
+    get:
+      tags:
+        - problem
+      summary: Find problem by ID
+      description: Returns a single pet
+      operationId: getProblemById
+      parameters:
+        - name: problemId
+          in: path
+          description: ID of problem to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Problem not found
+      security:
+        - service_auth:
+            - admin
+    post:
+      tags:
+        - problem
+      summary: Updates a problem in the store with form data
+      description: ''
+      operationId: updateProblemWithForm
+      parameters:
+        - name: problemId
+          in: path
+          description: ID of problem that needs to be updated
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: name
+          in: query
+          description: Name of problem that needs to be updated
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Status of problem that needs to be updated
+          schema:
+            type: string
+      responses:
+        '405':
+          description: Invalid input
+      security:
+        - service_auth:
+            - admin
+    delete:
+      tags:
+        - problem
+      summary: Deletes a problem
+      description: delete a problem
+      operationId: deleteProblem
+      parameters:
+        - name: api_key
+          in: header
+          description: ''
+          required: false
+          schema:
+            type: string
+        - name: problemId
+          in: path
+          description: Problem id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid problem value
+      security:
+        - service_auth:
+            - admin
+  /problemtodevice:
+    put:
+      tags:
+        - problemtodevice
+      summary: Update an problem on device
+      description: Update an existing problem on device by Id
+      operationId: updateProblemDevice
+      requestBody:
+        description: Update an existent problem on device
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemToDevice'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/ProblemToDevice'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProblemToDevice'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemToDevice_info'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ProblemToDevice_info'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: problem on device not found
+        '405':
+          description: Validation exception
+      security:
+        - service_auth:
+            - admin
+            - user
+    post:
+      tags:
+        - problemtodevice
+      summary: Add a new problem to device
+      description: Add a new problem to device
+      operationId: addProblemDevice
+      requestBody:
+        description: Create a new problem to device
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemToDevice'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/ProblemToDevice'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProblemToDevice'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemToDevice_info'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ProblemToDevice_info'
+        '405':
+          description: Invalid input
+      security:
+        - service_auth:
+            - admin
+            - user
+  /problemtodevice/{problemtodeviceId}:
+    get:
+      tags:
+        - problemtodevice
+      summary: Find problem in device by ID
+      description: Returns a problem in device
+      operationId: getProblemInDeviceById
+      parameters:
+        - name: problemtodeviceId
+          in: path
+          description: ID of problem in device to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemToDevice_info'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ProblemToDevice_info'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description:  not found
+      security:
+        - service_auth:
+            - admin
+            - user
+    post:
+      tags:
+        - problemtodevice
+      summary: Updates problem in device with form data
+      description: ''
+      operationId: playProblemDeviceWithForm
+      parameters:
+        - name: problemtodeviceId
+          in: path
+          description: ID of problem in device  that needs to be updated
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                
+                $ref: '#/components/schemas/ProblemToDevice_info'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ProblemToDevice_info'         
+        '405':
+          description: Invalid input
+      security:
+        - service_auth:
+            - admin
+            - user
+    delete:
+      tags:
+        - problemtodevice
+      summary: Deletes problem in device
+      description: delete problem in device
+      operationId: deleteProblemInDevice
+      parameters:
+        - name: problemtodeviceId
+          in: path
+          description: problem in device id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid problem value
+        '404':
+          description: proble not found
+      security:
+        - service_auth:
+            - admin
+            - user
+components:
+  schemas:
+    Device:
+      required:
+        - firm
+        - model
+        - owner_id
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        firm:
+          type: string
+          example: Samsung
+        model:
+          type: string
+          example: S10
+        status:
+          type: string
+          description: device status in the service
+          enum:
+            - arrived
+            - in work
+            - ready
+        owner_id:
+          type: integer
+          format: int64
+          example: 10
+      xml:
+        name: device
+    User:
+      required:
+        - lastName
+        - email
+        - password
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        username:
+          type: string
+          example: theUser
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: James
+        email:
+          type: string
+          example: john@email.com
+        password:
+          type: string
+          example: '12345'
+        phone:
+          type: string
+          example: '12345'
+        userStatus:
+          type: string
+          description: User Status
+          example: active
+      xml:
+        name: user
+    Service_Center:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        city:
+          type: string
+          example: Lviv
+        address:
+          type: string
+          example: Bandery 6
+        phone:
+          type: string
+          example: '12345'
+        rating:
+          type: number
+          format: float
+          example: 5.0
+      xml:
+        name: service_center
+    Problem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        branch:
+          type: string
+          description: branch of problem
+          enum:
+            - screen
+            - battery
+            - button
+            - os
+            - hardware
+        daysToSolve:
+          type: number
+          format: float
+          example: 1.2
+      xml:
+        name: problem
+    ProblemToDevice:
+      type: object
+      properties:
+        probelmId:
+          type: integer
+          format: int64
+          example: 10
+        deviceId:
+          type: integer
+          format: int64
+          example: 10
+      xml:
+        name: problemtodevice
+    ProblemToDevice_info:
+      type: object
+      properties:
+        problem:
+          $ref: '#/components/schemas/Problem'
+        device:
+          $ref: '#/components/schemas/Device'
+      xml:
+        name: problemtodevice_info
+  securitySchemes:
+    service_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          scopes:
+            admin: modify device in all account
+            user: read his own devices
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
