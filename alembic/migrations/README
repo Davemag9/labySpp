@@ -1,0 +1,5 @@
+Generic single-database configuration.
+
+
+alembic revision --autogenerate -m "Create user model"
+alembic upgrade heads
