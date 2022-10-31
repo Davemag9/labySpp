@@ -4,10 +4,15 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+requests = "*"
+alembic = "*"
+sqlalchemy = "*"
 flask = "*"
 waitress = "*"
+
 
 [dev-packages]
 
 [requires]
 python_version = "3.8"
+python_full_version = "3.8.9"
