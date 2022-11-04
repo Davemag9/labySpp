@@ -1,15 +1,24 @@
-from sqlalchemy import create_engine, Column, Integer, String, Enum, orm, ForeignKey, Table
+from sqlalchemy import create_engine, Column, Integer, String, Enum, orm, ForeignKey, Table, Enum
 from sqlalchemy.orm import sessionmaker, scoped_session, declarative_base, relationship
+from .database import Base
+import enum
 
-DBURL = 'postgresql+psycopg2://postgres:pavliv1alina2@localhost/service_center'
-engine=create_engine(DBURL)
+class userStatus(enum.Enum):
+    inactive = 0
+    active = 1
 
-SessionFactory = sessionmaker(bind=engine)
-Session = scoped_session(SessionFactory)
+class deviceStatus(enum.Enum):
+    arrived = 0
+    in_work = 1
+    ready = 2
 
-Base = declarative_base()
-
-
+class branchEnum(enum.Enum):
+    screen = 0
+    battery = 1
+    button = 2
+    os = 3
+    hardware = 4
+    other = 5
 
 class Service_Center(Base):
     __tablename__="service_center"
@@ -18,6 +27,9 @@ class Service_Center(Base):
     adress = Column(String(45), nullable=False)
     phone = Column(String(45), nullable=False)
     rating = Column(String(45), nullable=True)
+    
+    def __repr__(self):
+        return f'Service_Center(serviceid={self.serviceid},city={self.city},address={self.adress})'
 
 class Owner(Base):
     __tablename__="owner"
@@ -28,26 +40,34 @@ class Owner(Base):
     email = Column(String(45), nullable=False)
     password = Column(String(45), nullable=False)
     phone = Column(String(45), nullable=True)
-    userStatus = Column(String(45), nullable=True)
+    userStatus = Column(Enum(userStatus), nullable=False)
     service_centerid = Column(Integer, ForeignKey(Service_Center.serviceid, ondelete="CASCADE"))
     service_center = orm.relationship(Service_Center, backref="owner")
+
+    def __repr__(self):
+        return f'Owner(username={self.username},name={self.firstname+" " if self.firstname else ""}{self.lastname})'
 
 class Problem(Base):
     __tablename__ = "problem"
     problemid = Column(Integer, primary_key=True)
-    branch = Column(String(45), nullable=False)
+    branch = Column(Enum(branchEnum), nullable=False)
     daysToSolve = Column(Integer, nullable=True)
+    
+    def __repr__(self):
+        return f'Problem(problemid={self.problemid})'
 
 class Device(Base):
     __tablename__="device"
     deviceid = Column(Integer, primary_key=True)
     firm = Column(String(45), nullable=False)
     model = Column(String(45), nullable=False)
-    status = Column(String(45), nullable=True)
+    status = Column(Enum(deviceStatus), nullable=True)
     ownerid = Column(Integer, ForeignKey(Owner.ownerid, ondelete="CASCADE"))
     owner = orm.relationship(Owner, backref="device")
     problems = relationship("Problem", secondary='problem_to_device', passive_deletes=True)
 
+    def __repr__(self):
+        return f'Device(deviceid={self.deviceid},firm={self.firm},model={self.model})'
 
 problem_to_device = Table(
     "problem_to_device",

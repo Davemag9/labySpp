@@ -9,7 +9,9 @@ alembic = "*"
 sqlalchemy = "*"
 flask = "*"
 waitress = "*"
-
+flask-restful = "*"
+marshmallow-sqlalchemy = "*"
+marshmallow-enum = "*"
 
 [dev-packages]
 
