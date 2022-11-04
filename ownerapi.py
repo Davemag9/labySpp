@@ -2,12 +2,12 @@ from flask import request
 from flask_restful import Resource
 from alembic.database import db_session
 from alembic.models import Owner, Owner, Problem, Device
-from schemas import OwnerSchema
+from schemas import OwnerSchema, DeviceSchema
 from marshmallow.exceptions import ValidationError 
 from custom import json_error, errs
 
 owner_schema = OwnerSchema()
-
+device_schema = DeviceSchema()
 
 class OwnersAPI(Resource):
     def get(self):
@@ -54,16 +54,26 @@ class OwnersAPI(Resource):
         return {"message": "Updated user.", "user": json_data}
 
 class OwnerAPI(Resource):
-    def get(self, ownerid):
-        owner=Owner.query.get(ownerid)
+    def get(self, username):
+        owner=Owner.query.filter_by(username=username).first()
         if not owner:
             return errs.not_found
         return owner_schema.dump(owner), 200
     
-    def delete(self, ownerid):
-        owner=Owner.query.get(ownerid)
+    def delete(self, username):
+        owner=Owner.query.filter_by(username=username).first()
         if not owner:
             return errs.not_found
         db_session.delete(owner)
         db_session.commit()
         return '', 204
+
+class OwnerDeviceAPI(Resource):
+    def get(self, username):
+        owner=Owner.query.filter_by(username=username).first()
+        if not owner:
+            return errs.not_found
+        
+        
+        return {'owner':owner_schema.dump(owner), 'devices' : device_schema.dump(owner.device, many=True)}, 200
+    

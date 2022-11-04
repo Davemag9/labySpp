@@ -1,7 +1,7 @@
 from flask import request
 from flask_restful import Resource
 from alembic.database import db_session
-from alembic.models import Service_Center, Owner, Problem, Device
+from alembic.models import Service_Center, Owner, Problem, Device, deviceStatus
 from schemas import ServiceCenterSchema
 from marshmallow.exceptions import ValidationError 
 from custom import json_error, errs
@@ -67,4 +67,16 @@ class ServiceAPI(Resource):
         db_session.delete(service)
         db_session.commit()
         return '', 204
+
+
+
+class ServiceDeviceAPI(Resource):
+    def get(self):
+        statuses = [e.name for e in deviceStatus] + [None]
+        result = {}
+        
+        for status in statuses:
+            result[status] = len(Device.query.filter_by(status=status).all())
+        return result, 200
+    
 

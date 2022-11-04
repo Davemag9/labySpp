@@ -3,8 +3,8 @@ from flask_restful import Api
 from alembic.database import db_session, init_db
 
 from deviceapi import DevicesAPI, DeviceAPI, DeviceStatusAPI, DeviceFirmAPI, DeviceProblemAPI, DeviceProblemsAPI    
-from serviceapi import ServicesAPI, ServiceAPI
-from ownerapi import OwnersAPI, OwnerAPI
+from serviceapi import ServicesAPI, ServiceAPI, ServiceDeviceAPI
+from ownerapi import OwnersAPI, OwnerAPI, OwnerDeviceAPI
 from problemapi import ProblemsAPI, ProblemAPI, ProblemBranchAPI
 app = Flask(__name__)
 api = Api(app, prefix='/api/v1')
@@ -25,10 +25,12 @@ api.add_resource(DeviceStatusAPI, '/device/findByStatus')
 api.add_resource(DeviceFirmAPI, '/device/findByFirm')
 
 api.add_resource(ServicesAPI, '/service')
+api.add_resource(ServiceDeviceAPI, '/service/device')
 api.add_resource(ServiceAPI, '/service/<int:serviceid>')
 
 api.add_resource(OwnersAPI, '/user')
-api.add_resource(OwnerAPI, '/user/<int:ownerid>')
+api.add_resource(OwnerAPI, '/user/<username>')
+api.add_resource(OwnerDeviceAPI, '/user/<username>/device')
 
 api.add_resource(ProblemsAPI, '/problem')
 api.add_resource(ProblemAPI, '/problem/<int:problemid>')
