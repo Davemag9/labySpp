@@ -1,5 +1,5 @@
 from alembic.models import Service_Center, Owner, Problem, Device, deviceStatus, branchEnum, userStatus
-from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, auto_field
 from marshmallow_enum import EnumField
 
 
@@ -17,7 +17,9 @@ class OwnerSchema(SQLAlchemyAutoSchema):
         # include_relationships = True
         load_instance = True
         include_fk = True
-
+        exclude = ("password",)
+    password = auto_field(load_only=True)
+    
 class ProblemSchema(SQLAlchemyAutoSchema):
     branch = EnumField(branchEnum)
     class Meta:
