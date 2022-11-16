@@ -217,42 +217,6 @@ paths:
             - admin
             - user
             
-    post:
-      tags:
-        - device
-      summary: Updates a device in the service with form data
-      description: ''
-      operationId: updateDeviceWithForm
-      parameters:
-        - name: deviceId
-          in: path
-          description: ID of device that needs to be updated
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: name
-          in: query
-          description: Name of device that needs to be updated
-          schema:
-            type: string
-        - name: status
-          in: query
-          description: Status of device that needs to be updated
-          schema:
-            type: string
-      responses:
-        '200':
-          description: successful operation
-        '400':
-          description: Something went wrong
-        '405':
-          description: Invalid input
-      security:
-        - service_auth:
-            - admin
-            - user
-            
     delete:
       tags:
         - device
@@ -309,6 +273,37 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/User'
+    
+    put:
+      tags:
+        - user
+      summary: Update user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      requestBody:
+        description: Update an existent user in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+      security:
+        - service_auth:
+            - admin
+            - user
+            
   /user/login:
     get:
       tags:
@@ -399,42 +394,7 @@ paths:
         - service_auth:
             - admin
             - user
-    put:
-      tags:
-        - user
-      summary: Update user
-      description: This can only be done by the logged in user.
-      operationId: updateUser
-      parameters:
-        - name: username
-          in: path
-          description: name that need to be deleted
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Update an existent user in the store
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/User'
-      responses:
-        '200':
-          description: successful operation
-        '400':
-          description: Invalid username supplied
-        '404':
-          description: User not found
-      security:
-        - service_auth:
-            - admin
-            - user
+    
     delete:
       tags:
         - user
@@ -480,13 +440,20 @@ paths:
         - service_auth:
             - admin
             - user
-  /service/mydevices:
+  /user/{username}/devices:
     get:
       tags:
-        - service
+        - user
       summary: Returns user own devices
       description: Returns an array of status codes to quantities
       operationId: getMyDevices
+      parameters:
+        - name: username
+          in: path
+          description: 'The name that needs to be fetched. Use user1 for testing. '
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: successful operation
@@ -614,41 +581,7 @@ paths:
             - admin
             - user
             
-    post:
-      tags:
-        - service
-      summary: Updates a service with form data
-      description: ''
-      operationId: updateServiceWithForm
-      parameters:
-        - name: serviceId
-          in: path
-          description: ID of service that needs to be updated
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: name
-          in: query
-          description: Name of service that needs to be updated
-          schema:
-            type: string
-        - name: status
-          in: query
-          description: Status of service that needs to be updated
-          schema:
-            type: string
-      responses:
-        '200':
-          description: successful operation
-        '400':
-          description: Something went wrong
-        '405':
-          description: Invalid input
-      security:
-        - service_auth:
-            - admin
-            - user
+    
             
     delete:
       tags:
@@ -821,36 +754,7 @@ paths:
       security:
         - service_auth:
             - admin
-    post:
-      tags:
-        - problem
-      summary: Updates a problem in the store with form data
-      description: ''
-      operationId: updateProblemWithForm
-      parameters:
-        - name: problemId
-          in: path
-          description: ID of problem that needs to be updated
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: name
-          in: query
-          description: Name of problem that needs to be updated
-          schema:
-            type: string
-        - name: status
-          in: query
-          description: Status of problem that needs to be updated
-          schema:
-            type: string
-      responses:
-        '405':
-          description: Invalid input
-      security:
-        - service_auth:
-            - admin
+    
     delete:
       tags:
         - problem
@@ -985,37 +889,7 @@ paths:
         - service_auth:
             - admin
             - user
-    post:
-      tags:
-        - problemtodevice
-      summary: Updates problem in device with form data
-      description: ''
-      operationId: playProblemDeviceWithForm
-      parameters:
-        - name: problemtodeviceId
-          in: path
-          description: ID of problem in device  that needs to be updated
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                
-                $ref: '#/components/schemas/ProblemToDevice_info'          
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/ProblemToDevice_info'         
-        '405':
-          description: Invalid input
-      security:
-        - service_auth:
-            - admin
-            - user
+    
     delete:
       tags:
         - problemtodevice
