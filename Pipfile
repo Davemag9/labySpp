@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 requests = "*"
+psycopg2="*"
 alembic = "*"
 sqlalchemy = "*"
 flask = "*"
@@ -12,6 +13,9 @@ waitress = "*"
 flask-restful = "*"
 marshmallow-sqlalchemy = "*"
 marshmallow-enum = "*"
+Flask-JWT-Extended="*"
+flask_bcrypt="*"
+
 
 [dev-packages]
 
