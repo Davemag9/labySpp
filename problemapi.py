@@ -23,19 +23,15 @@ class ProblemsAPI(Resource):
         json_data = request.get_json()
         if not json_data:
             return errs.bad_request
-
         problem = Problem.query.get(json_data.get('problemid', None))
         if problem:
             return errs.exists
-
         try:
             data = problem_schema.load(json_data, session=db_session)
         except ValidationError as err:
             return json_error(err.messages, 400)
-
         db_session.add(data)
         db_session.commit()
-
         return {"message": "Created problem.", "problem": json_data}
 
     @admin_required()
@@ -43,16 +39,13 @@ class ProblemsAPI(Resource):
         json_data = request.get_json()
         if not json_data:
             return errs.bad_request
-
         problem = Problem.query.get(json_data.get('problemid', None))
         if not problem:
             return errs.not_found
-
         try:
             data = problem_schema.load(json_data, session=db_session)
         except ValidationError as err:
             return json_error(err.messages, 400)
-
         db_session.add(data)
         db_session.commit()
 
@@ -65,7 +58,6 @@ class ProblemAPI(Resource):
         problem = Problem.query.get(problemid)
         if not problem:
             return errs.not_found
-
         return problem_schema.dump(problem), 200
 
     @admin_required()
@@ -84,12 +76,9 @@ class ProblemBranchAPI(Resource):
         json_data = request.get_json()
         if not json_data:
             return errs.bad_request
-
         branch = json_data.get('branch', None)
-
         branchEnums = [e.name for e in branchEnum]
         if branch not in branchEnums:
             return json_error('Invalid request. Bad status value. Must be on of: ' + ', '.join(branchEnums), 400)
-
         problems = Problem.query.filter_by(branch=branch)
         return problem_schema.dump(problems, many=True), 200

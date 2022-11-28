@@ -18,21 +18,18 @@ class ServicesAPI(Resource):
         services = Service_Center.query.all()
         return service_schema.dump(services, many=True), 200
 
-    @admin_required()
+    # @admin_required()
     def post(self):
         json_data = request.get_json()
         if not json_data:
             return errs.bad_request
-
         service = Service_Center.query.get(json_data.get('serviceid', None))
         if service:
             return errs.exists
-
         try:
             data = service_schema.load(json_data, session=db_session)
         except ValidationError as err:
             return json_error(err.messages, 400)
-
         db_session.add(data)
         db_session.commit()
 
@@ -43,7 +40,6 @@ class ServicesAPI(Resource):
         json_data = request.get_json()
         if not json_data:
             return errs.bad_request
-
         service = Service_Center.query.get(json_data.get('serviceid', None))
         if not service:
             return errs.not_found
@@ -55,7 +51,6 @@ class ServicesAPI(Resource):
             data = service_schema.load(json_data, session=db_session)
         except ValidationError as err:
             return json_error(err.messages, 400)
-
         db_session.add(data)
         db_session.commit()
 
@@ -63,7 +58,6 @@ class ServicesAPI(Resource):
 
 
 class ServiceAPI(Resource):
-
     def get(self, serviceid):
         service = Service_Center.query.get(serviceid)
         if not service:

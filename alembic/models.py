@@ -43,7 +43,7 @@ class User(Base):
     firstname = Column(String(45), nullable=True)
     lastname = Column(String(45), nullable=False)
     email = Column(String(45), nullable=False)
-    password = Column(String(45), nullable=False)
+    password = Column(String(128), nullable=False)
     phone = Column(String(45), nullable=True)
     userStatus = Column(Enum(userStatus), default=userStatus.active, nullable=False)
     service_centerid = Column(Integer, ForeignKey(Service_Center.serviceid, ondelete="CASCADE"))
@@ -53,7 +53,6 @@ class User(Base):
     def __repr__(self):
         return f'User(username={self.username},name={self.firstname + " " if self.firstname else ""}{self.lastname})'
 
-
 class Problem(Base):
     __tablename__ = "problem"
     problemid = Column(Integer, primary_key=True)
@@ -62,8 +61,6 @@ class Problem(Base):
 
     def __repr__(self):
         return f'Problem(problemid={self.problemid})'
-
-
 class Device(Base):
     __tablename__ = "device"
     deviceid = Column(Integer, primary_key=True)
@@ -76,8 +73,6 @@ class Device(Base):
 
     def __repr__(self):
         return f'Device(deviceid={self.deviceid},firm={self.firm},model={self.model})'
-
-
 problem_to_device = Table(
     "problem_to_device",
     Base.metadata,

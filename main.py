@@ -15,7 +15,6 @@ from flask_jwt_extended import get_jwt
 from flask_jwt_extended import JWTManager
 from flask_jwt_extended import verify_jwt_in_request
 
-
 app.config["JWT_SECRET_KEY"] = "super-secret"
 jwt = JWTManager(app)
 
@@ -34,11 +33,9 @@ def admin_required():
             user = User.query.filter_by(username=claims['sub'])[0]
             if not user:
                 return json_error("Authentication failed. User not found", 404)
-
             if user.role == 'admin':
                 return fn(*args, **kwargs)
             return json_error("Must be an admin", 403)
-
         return decorator
 
     return wrapper
@@ -53,11 +50,9 @@ def master_required():
             user = User.query.filter_by(username=claims['sub'])[0]
             if not user:
                 return json_error("Authentication failed. User not found.", 404)
-
             if user.role == 'master' or user.role == 'admin':
                 return fn(*args, **kwargs)
             return json_error("Must be a master.", 403)
-
         return decorator
 
     return wrapper
