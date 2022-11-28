@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-DBURL = 'postgresql+psycopg2://postgres:postgres@localhost/service_center'
+DBURL = 'postgresql+psycopg2://postgres:2580@localhost/service_center'
 engine=create_engine(DBURL)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,

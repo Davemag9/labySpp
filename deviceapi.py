@@ -24,14 +24,11 @@ class DevicesAPI(Resource):
         json_data = request.get_json()
         if not json_data:
             return errs.bad_request
-
         device = Device.query.get(json_data.get('deviceid', None))
         if device:
             return errs.exists
-
         if not 'userid' in json_data:
             return json_error('Invalid request. No userid provided', 400)
-
         user = User.query.get(json_data.get('userid', None))
         if not user:
             return json_error('Invalid request. User not found', 400)
@@ -42,7 +39,6 @@ class DevicesAPI(Resource):
             data = device_schema.load(json_data, session=db_session)
         except ValidationError as err:
             return json_error(err.messages, 400)
-
         db_session.add(data)
         db_session.commit()
 
@@ -53,18 +49,15 @@ class DevicesAPI(Resource):
         json_data = request.get_json()
         if not json_data:
             return errs.bad_request
-
         device = Device.query.get(json_data.get('deviceid', None))
         if not device:
             return errs.not_found
         claims = get_user()
         if claims.role != 'admin' and claims.service_centerid != device.user.service_centerid:
             return json_error("Forbidden. Master can change devices only of his clients.", 403)
-
         user = User.query.get(json_data.get('userid', None))
         if not user:
             return json_error('Invalid request. User not found', 400)
-
         claims = get_user()
         if claims.role != 'admin' and claims.service_centerid != user.service_centerid:
             return json_error("Forbidden. Master can assign devices only to his clients.", 403)
@@ -72,7 +65,6 @@ class DevicesAPI(Resource):
             data = device_schema.load(json_data, session=db_session)
         except ValidationError as err:
             return json_error(err.messages, 400)
-
         db_session.add(data)
         db_session.commit()
 
@@ -85,14 +77,11 @@ class DeviceStatusAPI(Resource):
         json_data = request.get_json()
         if not json_data:
             return errs.bad_request
-
         status = json_data.get('status', None)
-
         deviceStatuses = [e.name for e in deviceStatus]
         if status not in deviceStatuses and status is not None:
             return json_error(
                 'Invalid request. Bad status value. Must be on of: ' + ', '.join(deviceStatuses) + ' or null', 400)
-
         devices = Device.query.filter_by(status=status)
         return device_schema.dump(devices, many=True), 200
 
@@ -103,10 +92,8 @@ class DeviceFirmAPI(Resource):
         json_data = request.get_json()
         if not json_data:
             return errs.bad_request
-
         if len(json_data) != 1 or 'firm' not in json_data:
             return json_error('Only firm field must be provided', 400)
-
         firm = json_data['firm']
 
         devices = Device.query.filter_by(firm=firm)
@@ -163,13 +150,12 @@ class DeviceProblemsAPI(Resource):
             return errs.bad_request
         problem = Problem.query.get(json_data.get('problemid', None))
         if problem:
-            return errs.exists
+            device.problems.append(problem)
 
         try:
             data = problem_schema.load(json_data, session=db_session)
         except ValidationError as err:
             return json_error(err.messages, 400)
-
         device.problems.append(data)
         db_session.add(data)
         db_session.commit()

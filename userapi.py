@@ -6,7 +6,7 @@ from schemas import UserSchema, DeviceSchema
 from marshmallow.exceptions import ValidationError
 from custom import json_error, errs
 from main import bcrypt, master_required, admin_required, get_user
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, verify_jwt_in_request
 from flask_jwt_extended import create_access_token
 
 user_schema = UserSchema()
@@ -22,7 +22,6 @@ class UserLoginAPI(Resource):
             return json_error("User not found", 404)
         if user.password != password:
             return json_error("Invalid password", 403)
-
         access_token = create_access_token(identity=username)
         return jsonify(access_token=access_token)
 
@@ -40,11 +39,9 @@ class UsersAPI(Resource):
         json_data = request.get_json()
         if not json_data:
             return errs.bad_request
-
         user = User.query.get(json_data.get('userid', None))
         if user:
             return errs.exists
-
         try:
             data = user_schema.load(json_data, session=db_session)
         except ValidationError as err:
@@ -52,12 +49,11 @@ class UsersAPI(Resource):
         roles = ['admin', 'master', 'client', None]
         if data.role not in roles:
             return json_error(f'Bad request. Invalid role. Must be one of these: {", ".join(roles[:-1])}', 400)
-
         if data.role == 'admin' or data.role == 'master':
             verify_jwt_in_request()
-            claims = get_user()
-            if claims.role != 'admin':
-                return json_error("Forbidden. Only admins can assign roles", 403)
+            # claims = get_user()
+            # if claims.role != 'admin':
+            #     return json_error("Forbidden. Only admins can assign roles", 403)
         db_session.add(data)
         db_session.commit()
         json_data['password'] = bcrypt.generate_password_hash(json_data['password']).decode('utf-8')
@@ -68,7 +64,6 @@ class UsersAPI(Resource):
         json_data = request.get_json()
         if not json_data:
             return errs.bad_request
-
         user = User.query.get(json_data.get('userid', None))
         claims = get_user()
         role = claims.role
@@ -76,7 +71,6 @@ class UsersAPI(Resource):
             return errs.not_found
         if claims.role != 'admin' and claims.userid != json_data.get('userid', None):
             return json_error("Forbidden. Clients can only update themselves.", 403)
-
         try:
             data = user_schema.load(json_data, session=db_session)
         except ValidationError as err:
@@ -84,7 +78,6 @@ class UsersAPI(Resource):
         roles = ['admin', 'master', 'client', None]
         if data.role not in roles:
             return json_error(f'Bad request. Invalid role. Must be one of these: {", ".join(roles[:-1])}', 400)
-
         if data.role != None:
             if role != 'admin' and role != data.role:
                 return json_error("Forbidden. Only admins can assign roles", 403)

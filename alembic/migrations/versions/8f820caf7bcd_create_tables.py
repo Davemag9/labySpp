@@ -1,7 +1,7 @@
 """Create tables
 
 Revision ID: 8f820caf7bcd
-Revises: 
+Revises:
 Create Date: 2022-11-16 18:29:47.728516
 
 """
